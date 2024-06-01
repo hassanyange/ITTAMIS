@@ -30,24 +30,22 @@ class Company(models.Model):
         return self.name
 
     
-
 class CustomerRequest(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+    full_name = models.CharField(max_length=100)
     phone_number = models.CharField(
         max_length=10, 
         blank=True, 
         validators=[RegexValidator(r'^\d{10}$', 'Enter a 10-digit phone number.')]
     )
-    district = models.ForeignKey('District', on_delete=models.CASCADE, null=True, blank=True)
-    ward = models.ForeignKey('Ward', on_delete=models.CASCADE, null=True, blank=True)
-    street = models.ForeignKey('Street', on_delete=models.CASCADE, null=True, blank=True)
-    payment_status = models.BooleanField(default=False)  
+    email = models.EmailField(max_length=100, blank=True)
+    national_id_number = models.CharField(max_length=20, blank=True)
+    amount_to_invest = models.DecimalField(max_digits=10, decimal_places=2, default=10000)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.name
+        return self.full_name
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

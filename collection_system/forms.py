@@ -3,6 +3,7 @@
 from django import forms
 from .models import Company, CustomerRequest, UserProfile, User, Ward, District, Street
 from django.contrib.auth.forms import UserCreationForm
+from django.core.validators import RegexValidator
 
 
 class LoginForm(forms.Form):
@@ -17,27 +18,44 @@ class CompanyForm(forms.ModelForm):
 
 
 class CustomerRequestForm(forms.ModelForm):
-    district = forms.ModelChoiceField(queryset=District.objects.all(), empty_label="Select District")
-    ward = forms.ModelChoiceField(queryset=Ward.objects.all(), empty_label="Select Ward")
-    street = forms.ModelChoiceField(queryset=Street.objects.all(), empty_label="Select Street")
+    phone_number = forms.CharField(
+        max_length=10,
+        validators=[RegexValidator(r'^\d{10}$', 'Enter a 10-digit phone number.')],
+        required=True
+    )
+    email = forms.EmailField(required=True)
+    national_id_number = forms.CharField(max_length=20, required=True)
+    amount_to_invest = forms.DecimalField(max_digits=10, decimal_places=2, required=True)
 
     class Meta:
         model = CustomerRequest
-        fields = ['name', 'phone_number', 'district', 'ward', 'street']
+        fields = ['full_name', 'phone_number', 'email', 'national_id_number', 'amount_to_invest']
 
-    def clean(self):
-        cleaned_data = super().clean()
-        district = cleaned_data.get('district')
-        ward = cleaned_data.get('ward')
-        street = cleaned_data.get('street')
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get('phone_number')
+        if not phone_number.isdigit():
+            raise forms.ValidationError("Phone number must contain only digits.")
+        if len(phone_number) != 10:
+            raise forms.ValidationError("Phone number must be exactly 10 digits.")
+        return phone_number
 
-        if district and ward and street:
-            if ward.district != district:
-                raise forms.ValidationError("The selected ward does not belong to the selected district.")
-            if street.ward != ward:
-                raise forms.ValidationError("The selected street does not belong to the selected ward.")
-        
-        return cleaned_data
+    def clean_national_id_number(self):
+        national_id_number = self.cleaned_data.get('national_id_number')
+        if not national_id_number.isdigit():
+            raise forms.ValidationError("National ID number must contain only digits.")
+        return national_id_number
+
+    def clean_amount_to_invest(self):
+        amount_to_invest = self.cleaned_data.get('amount_to_invest')
+        if amount_to_invest <= 0:
+            raise forms.ValidationError("Amount to invest must be a positive number.")
+        return amount_to_invest
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not email:
+            raise forms.ValidationError("Email is required.")
+        return email
 
 
         

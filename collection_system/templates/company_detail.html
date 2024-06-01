@@ -9,7 +9,7 @@
       <h2>{{ company.name }}</h2>
       <p><strong>About the Company:</strong> {{ company.description }}</p>
       <p><strong>Location:</strong> {{ company.location }}</p>
-      <p><strong>Types of Garbage Collected:</strong> {{ company.types_of_garbage }}</p>
+      <p><strong>Info for Investment:</strong> {{ company.types_of_garbage }}</p>
       <p><strong>Working Hours:</strong> {{ company.working_hours }}</p>
 
       <div class="contact-info mt-4">
@@ -31,7 +31,7 @@
       <!-- Make Request Form -->
       <div class="card">
         <div class="card-body">
-          <h3 class="card-title">Make a Garbage Collection Request</h3>
+          <h3 class="card-title">Make Invest Here</h3>
           <form method="post" action="{% url 'make_request' %}">
             {% csrf_token %}
             {{ form.as_p }}
